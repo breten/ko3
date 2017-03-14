@@ -53,7 +53,7 @@ argv
 })
 .command({
 	command: 'publish <project>',
-	aliases: ['pu'],
+	aliases: ['p'],
 	desc: "Publish the project",
 	handler: publish
 })
