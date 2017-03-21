@@ -37,6 +37,17 @@ function getPkgVersion(){
 	}
 	return info.version;
 }
+
+function versionToNum(version){
+	var _r = version.split('.'),
+		t = 0;
+
+	for(var i=_r.length - 1; i >= 0; i--){
+		t += _r[i] * Math.pow(10, _r.length - i - 1)
+	}
+	return t;
+}
+
 var conf,
 	webpackRoot = findWebpackRoot(processPath);
 
@@ -116,7 +127,7 @@ if(!webpackRoot){
 	npmview('ko2', function(err, version, moduleInfo) {
 	    if (!err) {
 	    	var currentPkgVersion = getPkgVersion();
-		    if(currentPkgVersion == version){
+		    if(versionToNum(currentPkgVersion) < versionToNum(version)){
 		    	console.log(chalk.green('ko2@' + version + ' was published. updating...'));
 		    	shelljs.exec( 'npm i -g ko2' );	
 		    	shelljs.exec('ko ' + process.argv.slice(2).join(' '))
