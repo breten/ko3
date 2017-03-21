@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 var program = require('commander');
 var shelljs = require('shelljs');
+var npmview = require('npmview');
 var fs = require('fs');
 var path = require('path');
 var chalk = require('chalk');
 var processPath = process.cwd();
 var initDir = require('./lib/initDir.js');
 
+
+
 function findWebpackRoot(thePath){
-	if(thePath == '/'){
+	if(thePath == path.join(thePath, '../')){
 		return null;
 	}
 	if(fs.existsSync(path.join(thePath, 'webpack.config.js'))){
@@ -25,6 +28,15 @@ function getScriptParam(prj){
 	return '';
 }
 
+function getPkgVersion(){
+	var info = {};
+	try {
+		info = JSON.parse(String(fs.readFileSync(path.join(__dirname, 'package.json'))));
+	}catch(e){
+
+	}
+	return info.version;
+}
 var conf,
 	webpackRoot = findWebpackRoot(processPath);
 
@@ -101,9 +113,22 @@ program
 if(!webpackRoot){
 	console.log( chalk.red("    ERR: Invalid project. Check the path!") );
 }else {
-	conf = require(path.join(webpackRoot, 'webpack.config.js'));
-	program.parse(process.argv);
-	if (!process.argv.slice(2).length) {
-		program.outputHelp();
-	}
+	npmview('ko2', function(err, version, moduleInfo) {
+	    if (!err) {
+	    	var currentPkgVersion = getPkgVersion();
+		    if(currentPkgVersion == version){
+		    	console.log(chalk.green('ko2@' + version + ' was published. updating...'));
+		    	shelljs.exec( 'npm i -g ko2' );	
+		    	shelljs.exec('ko ' + process.argv.slice(2).join(' '))
+		    	return;
+		    }
+	    }
+
+	    conf = require(path.join(webpackRoot, 'webpack.config.js'));
+		program.parse(process.argv);
+		if (!process.argv.slice(2).length) {
+			program.outputHelp();
+		}
+
+	});
 }
