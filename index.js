@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-var argv = require('yargs');
 var program = require('commander');
 var shelljs = require('shelljs');
 var fs = require('fs');
