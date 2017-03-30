@@ -7,8 +7,7 @@ var path = require('path');
 var chalk = require('chalk');
 var processPath = process.cwd();
 var initDir = require('./lib/initDir.js');
-
-
+var inquirer = require('inquirer');
 
 function findWebpackRoot(thePath){
 	if(thePath == path.join(thePath, '../')){
@@ -38,6 +37,16 @@ function getPkgVersion(){
 	return info.version;
 }
 
+function setPkgVersion(version){
+	var info = {};
+	try {
+		info = JSON.parse(String(fs.readFileSync(path.join(__dirname, 'package.json'))));
+	}catch(e){
+
+	}
+	info.version = version;
+	fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(info))
+}
 function versionToNum(version){
 	var _r = version.split('.'),
 		t = 0;
@@ -116,6 +125,13 @@ program
 	})
 
 program
+	.command('update')
+	.alias('u')
+	.action(function(project){
+		shelljs.exec( 'npm i -g ko2' )
+	})
+
+program
 	.command('*')
 	.action(function(){
 		console.log("Invalid command. See 'ko --help'.")
@@ -139,17 +155,34 @@ if(!webpackRoot){
 	console.log( chalk.red("    ERR: Invalid project. Check the path!") );
 }else {
 	npmview('ko2', function(err, version, moduleInfo) {
-	    if (!err) {
+    	if (!err) {
 	    	var currentPkgVersion = getPkgVersion();
 		    if(versionToNum(currentPkgVersion) < versionToNum(version)){
-		    	console.log(chalk.green('ko2@' + version + ' was published. updating...'));
-		    	shelljs.exec( 'npm i -g ko2' );	
-		    	shelljs.exec('ko ' + process.argv.slice(2).join(' '))
+		    	
+		    	var prompt = [];
+			      prompt.push({
+			        type: 'confirm',
+			        name: 'isUpdate',
+			        message: 'The lastest version is ' + version + '. Do you want to update?',
+			        default: true
+			      });
+			      inquirer.prompt(prompt).then(function (answers) {
+			        if (answers.isUpdate) {
+			          console.log();
+			          console.log(chalk.green('  updating...'));
+			          shelljs.exec( 'npm i -g ko2' );	
+		    				shelljs.exec('ko ' + process.argv.slice(2).join(' '))
+			        } else {
+			          setPkgVersion(version)
+			          shelljs.exec('ko ' + process.argv.slice(2).join(' '))
+			        }
+			      });	
+
 		    	return;
 		    }
 	    }
 
-	    conf = require(path.join(webpackRoot, 'webpack.config.js'));
+	  conf = require(path.join(webpackRoot, 'webpack.config.js'));
 		program.parse(process.argv);
 		if (!process.argv.slice(2).length) {
 			program.outputHelp();
