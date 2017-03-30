@@ -121,6 +121,20 @@ program
 		console.log("Invalid command. See 'ko --help'.")
 	})
 
+program
+	.on('--help', function(){
+		console.log('  Examples:');
+	    console.log('');
+	    console.log('    $ ko new projectName');
+	    console.log('    $ ko new --page pageName');
+	    console.log('    $ ko serve projectName');
+	    console.log('    $ ko build --publish projectName');
+	    console.log('');
+	})
+
+program
+	.version(getPkgVersion())
+
 if(!webpackRoot){
 	console.log( chalk.red("    ERR: Invalid project. Check the path!") );
 }else {
