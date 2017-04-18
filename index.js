@@ -8,7 +8,6 @@ var chalk = require('chalk');
 var processPath = process.cwd();
 var initDir = require('./lib/initDir.js');
 var inquirer = require('inquirer');
-
 function findWebpackRoot(thePath){
 	if(thePath == path.join(thePath, '../')){
 		return null;
@@ -59,6 +58,19 @@ function versionToNum(version){
 
 var conf,
 	webpackRoot = findWebpackRoot(processPath);
+
+program
+	.command('init [app]')
+	.description('create a new app with a template')
+	.action(function(app){
+		shelljs.exec( 'git clone ' + 'git@git.jd.com:ko-templates/' + 'default' + '.git ' + app );
+		shelljs.exec( 'rm -rf ' + app + '/.git' );
+		console.log(chalk.gray(app + ' was created! To run your app:'))
+		console.log('    ' + ('cd ./' + app))
+		console.log('    ' + ('npm install'))
+		console.log('    ' + ('ko serve helloworld'))
+	})
+
 
 program
 	.command('new [name]')
@@ -128,7 +140,8 @@ program
 	.command('update')
 	.alias('u')
 	.action(function(project){
-		shelljs.exec( 'npm i -g ko2' )
+		shelljs.exec( 'npm update -g ko2' )
+		shelljs.exec( 'npm update' )
 	})
 
 program
@@ -151,7 +164,16 @@ program
 program
 	.version(getPkgVersion())
 
-if(!webpackRoot){
+var needConfCmd = {
+	'new': true,
+	'serve': true,
+	'build': true,
+	'load': true,
+	'debug': true,
+	'update': true
+};
+
+if(process.argv.slice(2)[0] && needConfCmd[process.argv.slice(2)] && !webpackRoot){
 	console.log( chalk.red("    ERR: Invalid project. Check the path!") );
 }else {
 	npmview('ko2', function(err, version, moduleInfo) {
@@ -170,7 +192,8 @@ if(!webpackRoot){
 			        if (answers.isUpdate) {
 			          console.log();
 			          console.log(chalk.green('  updating...'));
-			          shelljs.exec( 'npm i -g ko2' );	
+			          shelljs.exec( 'npm update -g ko2' );	
+			          shelljs.exec( 'npm update' );	
 		    				shelljs.exec('ko ' + process.argv.slice(2).join(' '))
 			        } else {
 			          setPkgVersion(version)
@@ -182,7 +205,7 @@ if(!webpackRoot){
 		    }
 	    }
 
-	  conf = require(path.join(webpackRoot, 'webpack.config.js'));
+	  webpackRoot && (conf = require(path.join(webpackRoot, 'webpack.config.js')));
 		program.parse(process.argv);
 		if (!process.argv.slice(2).length) {
 			program.outputHelp();
