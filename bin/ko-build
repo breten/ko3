@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+const path = require('path')
+const fs = require('fs')
+const _ = require('lodash')
+const chalk = require('chalk')
+const program = require('commander')
+const Ko = require('../lib/ko')
+
+const dist = path.join(process.cwd(), 'examples')
+
+program
+	.usage('<prj-name>')
+	.option('-p, --public', 'publish the project after built')
+	.parse(process.argv)
+
+program.on('--help', function () {
+  console.log('  Examples:')
+  console.log()
+  console.log(chalk.gray('    # build the project'))
+  console.log('    $ ko build project-name')
+  console.log()
+})
+
+if(program.args.length < 1) {
+	return program.help()
+}
+const prjName = program.args[0]
+const koConfigFileName = 'ko.config.js'
+const koConfigFilePath = path.resolve('.', koConfigFileName)
+
+let options = {}
+if(fs.existsSync(koConfigFilePath)) {
+	options = require(koConfigFilePath)
+}else {
+	console.log(chalk.red(`Could not locate ${koConfigFileName}`))
+	return
+}
+
+options.prjName = prjName
+
+console.log(chalk.gray('Building...'))
+new Ko(options)
+	.then(ko => {
+		ko.prev()
+			.then(ko.build)
+			.then(() => {
+				console.log(chalk.green('Building done'))
+			})
+			.catch((err) => {
+				console.error(err)
+				process.exit(1)
+			})
+	})
