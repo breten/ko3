@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+
+const path = require('path')
+const fs = require('fs')
+const _ = require('lodash')
+const chalk = require('chalk')
+const program = require('commander')
+const Ko = require('../lib/ko')
+const initDir = require('../lib/initDir.js')
+
+program
+	.usage('<prj-name>')
+	.option('-p, --page', 'create a new html file')
+	.parse(process.argv)
+
+program.on('--help', function () {
+  console.log('  Examples:')
+  console.log()
+  console.log(chalk.gray('    # Create a new project or file'))
+  console.log('    $ ko new project-name')
+  console.log()
+})
+
+if(program.args.length < 1) {
+	return program.help()
+}
+
+function findRoot(thePath, configFileName){
+	if(thePath == path.join(thePath, '../')){
+		return null;
+	}
+	if(fs.existsSync(path.join(thePath, configFileName))){
+		return thePath;
+	}else{
+		return findRoot(path.join(thePath, '../'));
+	}
+}
+
+const prjName = program.args[0]
+const koConfigFileName = 'ko.config.js'
+const page = program.page
+const processPath = process.cwd()
+const rootDir = findRoot(processPath, koConfigFileName)
+const koConfigFilePath = path.resolve(rootDir, koConfigFileName)
+
+if(!rootDir){
+	console.log(chalk.red(`Could not locate ${koConfigFileName}`))
+	process.exit(1)
+}
+
+const options = require(koConfigFilePath)
+options.prjName = prjName
+const _newPrjConfig = {
+	newPrj: {
+    mod: {},
+    utils: {},
+    "index.shtml": path.join(__dirname, "../lib/tpl/page.tpl")
+  },
+  newHtml: path.join(__dirname, "../lib/tpl/page.tpl")
+}
+
+new Ko(options)
+	.then(ko => {
+		const newPrjConfig = _.defaultsDeep(ko.options.newPrj, _newPrjConfig)
+		if(!page){
+			var _dir = {};
+				_dir[ko.options.prjName] = newPrjConfig.newPrj;
+			if(fs.existsSync(path.join(rootDir, ko.options.pagesDir, ko.options.prjName))){
+				console.log(chalk.red('    Warn: The project already exists.'));
+			}else{
+				initDir(_dir, path.join(rootDir, ko.options.pagesDir), '');
+				console.log(chalk.green(ko.options.prjName + ' created!'))
+			}
+		}else{
+			var _dir = {}
+				_tarName = name + '.shtml';
+				_dir[_tarName] = newPrjConfig.newHtml;
+			if(fs.existsSync(path.join(processPath, _tarName))){
+				console.log(chalk.red('    Warn: The file already exists.'));
+			}else{
+				initDir(_dir, processPath, '')
+				console.log(chalk.green(_tarName + ' created!'))
+			}
+		}
+	})

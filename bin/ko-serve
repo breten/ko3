@@ -7,11 +7,8 @@ const chalk = require('chalk')
 const program = require('commander')
 const Ko = require('../lib/ko')
 
-const dist = path.join(process.cwd(), 'examples')
-
 program
 	.usage('<prj-name>')
-	.option('-d, --deploy', 'deploy the project after built')
 	.parse(process.argv)
 
 program.on('--help', function () {
@@ -28,7 +25,6 @@ if(program.args.length < 1) {
 const prjName = program.args[0]
 const koConfigFileName = 'ko.config.js'
 const koConfigFilePath = path.resolve('.', koConfigFileName)
-const deploy = program.deploy
 
 let options = {}
 if(fs.existsSync(koConfigFilePath)) {
@@ -40,23 +36,11 @@ if(fs.existsSync(koConfigFilePath)) {
 
 options.prjName = prjName
 
-console.log(chalk.gray('Building...'))
 new Ko(options)
 	.then(ko => {
-		ko.clearDist()
-			.then(ko.parseHtml)
-			.then(ko.build)
-			.then(ko.outputHtml)
-			.then(() => {
-				console.log(chalk.green('Building done'))
-				if(deploy) {
-					console.log(chalk.gray('Uploading...'))
-					return ko.deploy()
-				}
-				return Promise.resolve()
-			})
-			.catch((err) => {
-				console.error(err)
-				process.exit(1)
-			})
+		new ko.server(ko).start()
+	})
+	.catch((err) => {
+		console.log(err)
+		process.exit(1)
 	})

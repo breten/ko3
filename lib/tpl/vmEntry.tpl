@@ -1,4 +1,4 @@
-const Vue = require('vue/dist/vue.js')
+const Vue = require('vue')
 <% _.forEach(components, function(component) { %>
 import <%= component.name %> from '<%- component.pathAsJs %>';<% }); %>
 

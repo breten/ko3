@@ -3,5 +3,7 @@
 require('commander')
   .version(require('../package').version)
   .usage('<command> [options]')
-  .command('build', 'build the project')
+  .command('build', 'Build the project')
+  .command('serve', 'Serve the project')
+  .command('new', 'Create a new project or file')
   .parse(process.argv)
