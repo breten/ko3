@@ -1,6 +1,6 @@
 {
   "name": "ko3",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "",
   "main": "lib/ko.js",
   "bin": {
@@ -23,6 +23,7 @@
     "connect": "^3.6.2",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^2.1.2",
+    "file-loader": "^0.11.2",
     "glob": "^7.1.2",
     "gulp-util": "^3.0.8",
     "htmlparser2": "^3.9.2",
@@ -38,6 +39,7 @@
     "style-loader": "^0.18.2",
     "through2": "^2.0.3",
     "url": "^0.11.0",
+    "url-loader": "^0.5.9",
     "vinyl-fs": "^2.4.4",
     "vue": "^2.3.4",
     "vue-html-loader": "^1.2.4",
