@@ -31,7 +31,7 @@ function findRoot(thePath, configFileName){
 	if(fs.existsSync(path.join(thePath, configFileName))){
 		return thePath;
 	}else{
-		return findRoot(path.join(thePath, '../'));
+		return findRoot(path.join(thePath, '../'), configFileName);
 	}
 }
 
@@ -41,7 +41,6 @@ const page = program.page
 const processPath = process.cwd()
 const rootDir = findRoot(processPath, koConfigFileName)
 const koConfigFilePath = path.resolve(rootDir, koConfigFileName)
-
 if(!rootDir){
 	console.log(chalk.red(`Could not locate ${koConfigFileName}`))
 	process.exit(1)
@@ -51,7 +50,9 @@ const options = require(koConfigFilePath)
 options.prjName = prjName
 const _newPrjConfig = {
 	newPrj: {
-    mod: {},
+    mod: {
+    	"hello.vue": path.join(__dirname, "../lib/tpl/helloVue.tpl")
+    },
     utils: {},
     "index.shtml": path.join(__dirname, "../lib/tpl/page.tpl")
   },
@@ -62,7 +63,7 @@ new Ko(options)
 	.then(ko => {
 		const newPrjConfig = _.defaultsDeep(ko.options.newPrj, _newPrjConfig)
 		if(!page){
-			var _dir = {};
+			let _dir = {};
 				_dir[ko.options.prjName] = newPrjConfig.newPrj;
 			if(fs.existsSync(path.join(rootDir, ko.options.pagesDir, ko.options.prjName))){
 				console.log(chalk.red('    Warn: The project already exists.'));
@@ -71,8 +72,8 @@ new Ko(options)
 				console.log(chalk.green(ko.options.prjName + ' created!'))
 			}
 		}else{
-			var _dir = {}
-				_tarName = name + '.shtml';
+			let _dir = {}
+				_tarName = prjName + '.shtml';
 				_dir[_tarName] = newPrjConfig.newHtml;
 			if(fs.existsSync(path.join(processPath, _tarName))){
 				console.log(chalk.red('    Warn: The file already exists.'));
