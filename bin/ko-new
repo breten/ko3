@@ -11,15 +11,14 @@ const initDir = require('../lib/initDir.js')
 program
 	.usage('<prj-name>')
 	.option('-p, --page', 'create a new html file')
+	.on('--help', function () {
+	  console.log('  Examples:')
+	  console.log()
+	  console.log(chalk.gray('    # Create a new project or file'))
+	  console.log('    $ ko3 new project-name')
+	  console.log()
+	})
 	.parse(process.argv)
-
-program.on('--help', function () {
-  console.log('  Examples:')
-  console.log()
-  console.log(chalk.gray('    # Create a new project or file'))
-  console.log('    $ ko new project-name')
-  console.log()
-})
 
 if(program.args.length < 1) {
 	return program.help()

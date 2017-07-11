@@ -9,15 +9,14 @@ const Ko = require('../lib/ko')
 
 program
 	.usage('<prj-name>')
+	.on('--help', function () {
+	  console.log('  Examples:')
+	  console.log()
+	  console.log(chalk.gray('    # build the project'))
+	  console.log('    $ ko3 build project-name')
+	  console.log()
+	})
 	.parse(process.argv)
-
-program.on('--help', function () {
-  console.log('  Examples:')
-  console.log()
-  console.log(chalk.gray('    # build the project'))
-  console.log('    $ ko build project-name')
-  console.log()
-})
 
 if(program.args.length < 1) {
 	return program.help()

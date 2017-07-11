@@ -12,15 +12,14 @@ const dist = path.join(process.cwd(), 'examples')
 program
 	.usage('<prj-name>')
 	.option('-d, --deploy', 'deploy the project after built')
+	.on('--help', function () {
+	  console.log('  Examples:')
+	  console.log()
+	  console.log(chalk.gray('    # build the project'))
+	  console.log('    $ ko3 build project-name')
+	  console.log()
+	})
 	.parse(process.argv)
-
-program.on('--help', function () {
-  console.log('  Examples:')
-  console.log()
-  console.log(chalk.gray('    # build the project'))
-  console.log('    $ ko build project-name')
-  console.log()
-})
 
 if(program.args.length < 1) {
 	return program.help()
