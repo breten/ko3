@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+const path = require('path')
+const fs = require('fs')
+const chalk = require('chalk')
+const program = require('commander')
+const initDir = require('../lib/initDir.js')
+
+program
+	.usage('<prj-name>')
+	.on('--help', function () {
+	  console.log('  Examples:')
+	  console.log()
+	  console.log(chalk.gray('    # Init project'))
+	  console.log('    $ ko3 init demo')
+	  console.log()
+	})
+	.parse(process.argv)
+
+if(program.args.length < 1) {
+	return program.help()
+}
+
+const prjName = program.args[0]
+const processPath = process.cwd()
+
+if(fs.existsSync(prjName)) {
+	console.log(chalk.red(`    ${prjName} already exists`))
+	return
+}
+
+const _newPrjConfig = {
+	"page": {
+		"helloworld": {
+			mod: {
+	    	"hello.vue": path.join(__dirname, "../lib/tpl/helloVue.tpl")
+	    },
+	    utils: {},
+	    "index.shtml": path.join(__dirname, "../lib/tpl/page.tpl")
+		}
+	},
+	"ko.config.js": path.join(__dirname, "../lib/tpl/koConfigJs.tpl")
+}
+
+
+let _dir = {};
+_dir[prjName] = _newPrjConfig
+
+initDir(_dir, processPath, '')
+console.log(chalk.green(prjName + ' created!'))
+console.log()
+console.log(chalk.gray(`    cd ${prjName}`))
+console.log(chalk.gray(`    ko3 serve helloworld`))
+console.log()
