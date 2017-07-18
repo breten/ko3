@@ -4,7 +4,7 @@ KO - 快速开始Web开发的脚手架工具
 
 - pagesDir
 
-  默认： `page`，用于放置项目的目录
+	默认： `page`，用于放置项目的目录
 
 - distDir
 	
@@ -39,7 +39,6 @@ KO - 快速开始Web开发的脚手架工具
 1、在`js`(可通过**jsEntryDir**配置)目录里添加`main.js`文件：
 
 ```js
-
 alert('hello world')
 ```
 
@@ -49,9 +48,7 @@ alert('hello world')
 <html>
 // ...
 <body>
-
   <%= Sinclude('main', 'inline') %>
-  
 </body>
 </html>
 ```
@@ -65,7 +62,6 @@ alert('hello world')
 
 ```html
 ...
-
 <style lang="scss">
 
 </style>
@@ -75,7 +71,6 @@ alert('hello world')
 
 ```html
 import 'xxx.scss'
-
 ```
 
 > 使用其它预处理器，可自行扩展webpack配置
@@ -112,7 +107,6 @@ build过程中只会处理 带有`vm-container`属性的节点 及 `<%= %>`包�
 通过 `ko.config.js` 文件中的`webpack`配置项来扩展
 
 ```js
-
 module.exports = {
 	// ...
 	webpack: {
