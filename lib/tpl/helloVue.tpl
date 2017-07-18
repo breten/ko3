@@ -1,14 +1,13 @@
 <template>
-	<h1>{{ greeting }} world!</h1>
+  <h1>Hello {{ name }}!</h1>
 </template>
+
 <script>
-	module.exports = {
-		data: function () {
-			return {
-				greeting: 'hello'
-			}
-		}
-	}
+export default {
+  data: () => {
+    return { name: 'world' }
+  }
+}
 </script>
 <style>
 	h1 {

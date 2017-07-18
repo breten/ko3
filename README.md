@@ -1,4 +1,4 @@
-KO - 快速开始Web开发的命令行工具
+KO - 快速开始Web开发的脚手架工具
 
 ## 安装
 
@@ -19,6 +19,7 @@ $ SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ npm install -g ko3 
 # 初始化工程
 $ ko3 init demo
 
+# 初始化工程的时候会自动创建一个名为helloworld的项目
 # 预览helloworld项目
 $ cd demo && ko3 serve helloworld
 
@@ -28,18 +29,17 @@ $ ko3 --help
 
 ## 介绍
 
-### 主要功能
+- KO 是一个可以快速开始Web开发的脚手架工具。
+- 它基于Webpack，除了基本的打包构建，还定制了组件拼装、加载性能优化、资源管理等许多实用功能。
 
-- .vue单文件组件快捷拼装(默认基于Vue开发，适合于组件逻辑相对独立并且可能会被多个页面引用的项目开发场景)
-- 定制的Webpack配置(Sass、babel、file-loader、代码压缩合并等)，**无需配置即可进行开发**，同样支持自定义配置
-- 页面资源分块打包、加载管理及版本号控制
 
 ### 基础目录结构
 
 ```sh
+demo                     //工程目录
 	├── mod                //通用模块
 	├── page               //业务入口
-	│   ├── xxx            //项目名
+	│   ├── helloworld     //项目名
 	│       ├── _js        //js入口文件，由工具自动生成，请忽略
 	│       ├── mod        //业务私有模块vue文件
 	│       │   └── *.vue 
@@ -50,51 +50,76 @@ $ ko3 --help
 
 ### 组件开发
 
-#### 1. 使用 Vue 单文件组件
-- 文档参考 [http://cn.vuejs.org/](http://cn.vuejs.org/)
+#### 1. 在项目的 `./page/helloworld/mod` 目录下添加一个文件hello2.vue：
+```html
+<template>
+  <h1>Hello {{ name }}!</h1>
+</template>
 
-#### 2. 使用 ES6 语法
-- 参考Babel文档
+<script>
+export default {
+  data: () => {
+    return { name: 'world2' }
+  }
+}
+</script>
 
-#### 3. 文件存放目录
-- `*.vue` 文件默认存放在 `/page/projectName/mod` 目录下，其它目录在引入的时候需要指定路径
+```
 
-### 如何引入组件
+> 关于 Vue 单文件组件 - 文档参考 [http://cn.vuejs.org/](http://cn.vuejs.org/)
+
+
+### 引入组件
 
 #### 1. 新建组件容器
 ```html
-<div vm-container="firstScreen"></div>
+<div vm-container="bundle"></div>
 ```
 Vue 组件的引入，必须依赖设置了 `vm-container` 属性值的容器，编译后会自动打包到 `vm-container` 属性值命名的 js 文件里。
 
 #### 2. 引入Vue组件
 ```html
-<div vm-container="firstScreen">  	
-	<banner vm-type="component"></banner>
-	<goodlist vm-type="component"></goodlist>
+<div vm-container="bundle">  	
+	<hello vm-type="component"></hello>
+	<hello2 vm-type="component"></hello2>
 </div>
 ```
 
-例如：引入一个名为 **banner.vue** 的组件(*标签名等同文件名*)，同时需设置 `vm-type` 值为 `"component"`。
+例如：引入一个名为 **hello.vue** 的组件(*标签名等同文件名*)，同时需设置 `vm-type` 值为 `"component"`。
 
-默认加载对应项目的 **mod** 目录文件，如需指定组件源目录，可通过 `vm-source` 属性设置。
+#### 3. 指定引入组件的目录
 
-#### 3. 设置组件加载方式
+默认加载对应项目的 **mod** 目录文件，如需指定组件源目录，可通过 `vm-source` 属性设置。例如：引入一个与page同级的mod目录下的common.vue组件
+
+```html
+<div vm-container="bundle">  	
+	<common vm-type="component" vm-source="../../mod"></common>
+</div>
+```
+
+#### 4. 设置组件块加载方式
+
 ```js
-<%= Sinclude("firstScreen", "inline") %>
+<%= Sinclude("bundle", "inline") %>
 ```
 - inline：js 资源将会内联在 html 页面中
 - async：js 资源异步加载
 - 不传参：默认 script 标签外链
 
+### 项目预览
+
+```sh
+$ ko3 serve helloworld     // http://localhost:9000
+
+
 ### 项目部署
 
-```js
+```sh
 $ ko3 build helloworld     // 对page目录下的helloworld项目进行编译
 ```
 编译后的文件会打包到对应的 **dist** 目录中
 
-```js
+```sh
 $ ko3 build helloworld -d     // 编译完成成自动通过Sftp发布到配置好的目录
 ```
 
