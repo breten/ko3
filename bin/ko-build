@@ -39,7 +39,6 @@ if(fs.existsSync(koConfigFilePath)) {
 
 options.prjName = prjName
 
-console.log(chalk.gray('Building...'))
 new Ko(options)
 	.then(ko => {
 		ko.clearDist()
