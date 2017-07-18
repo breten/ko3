@@ -12,11 +12,13 @@ KO - 快速开始Web开发的脚手架工具
 
 - staticDomain
 
-	默认： 空，静态资源域
+	默认： `空`，静态资源域
+
 
 — jsDir
 
 	默认：`_js`，用于放置生成的js入口文件
+
 
 — jsEntryDir
 
