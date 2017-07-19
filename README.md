@@ -110,7 +110,7 @@ Vue 组件的引入，必须依赖设置了 `vm-container` 属性值的容器，
 
 ```sh
 $ ko3 serve helloworld     // http://localhost:9000
-
+```
 
 ### 项目部署
 
