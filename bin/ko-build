@@ -46,6 +46,9 @@ new Ko(options)
 			.then(ko.build)
 			.then(ko.outputHtml)
 			.then(() => {
+				return ko.clearTmp()
+			})
+			.then(() => {
 				console.log(chalk.green('Building done'))
 				if(deploy) {
 					console.log(chalk.gray('Uploading...'))
