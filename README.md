@@ -73,7 +73,7 @@ export default {
 ```
 
 > - 关于 Vue 单文件组件 - 文档参考 [http://cn.vuejs.org/](http://cn.vuejs.org/)
-- 默认配置了sass编译，可以直接在样式中写sass语法
+> - 默认配置了sass编译，可以直接在样式中写sass语法
 
 
 
