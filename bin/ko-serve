@@ -13,8 +13,8 @@ program
 	.on('--help', function () {
 	  console.log('  Examples:')
 	  console.log()
-	  console.log(chalk.gray('    # build the project'))
-	  console.log('    $ ko3 build project-name')
+	  console.log(chalk.gray('    # serve the project'))
+	  console.log('    $ ko3 serve project-name')
 	  console.log()
 	})
 	.parse(process.argv)
