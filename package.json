@@ -1,6 +1,6 @@
 {
   "name": "ko3",
-  "version": "1.1.8",
+  "version": "1.1.10",
   "description": "",
   "main": "lib/ko.js",
   "bin": {
@@ -52,9 +52,7 @@
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.3.4",
     "webpack": "^2.7.0",
-    "webpack-dev-server": "^2.5.0"
-  },
-  "devDependencies": {
+    "webpack-dev-server": "^2.5.0",
     "extract-loader": "^0.1.0",
     "html-loader": "^0.4.5",
     "webpack-bundle-analyzer": "^2.8.3"
