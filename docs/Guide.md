@@ -30,9 +30,10 @@ KO - 快速开始Web开发的脚手架工具
   - asyncJsTpl   默认 `<script async type="text/javascript" src="<%= url %>"></script>\n`,
   - defaultJsTpl 默认 `<script type="text/javascript" src="<%= url %>"></script>\n`,
 
-- webpack `Object`
+- wpProduct `Object` build时执行
+- wpDev `Object` serve时执行
 	
-	用于扩展webpack配置
+	用于扩展webpack配置,支持resolve(extensions、alias、modules),module(rules、plugins)扩展
 
 
 ## 引入js文件
@@ -111,12 +112,14 @@ build过程中只会处理 带有`vm-container`属性的节点 及 `<%= %>`包�
 ```js
 module.exports = {
 	// ...
-	webpack: {
-		plugins:[
-			new webpackPlugin({
-				// ...
-			})
-		]
+	wpProduct: {
+		module: {
+			plugins:[
+				new webpackPlugin({
+					// ...
+				})
+			]
+		}
 	}
 }
 ```
