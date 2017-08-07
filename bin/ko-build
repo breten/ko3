@@ -45,6 +45,7 @@ new Ko(options)
 			.then(ko.parseHtml)
 			.then(ko.build)
 			.then(ko.outputHtml)
+			.then(ko.sitemap)
 			.then(() => {
 				return ko.clearTmp()
 			})
