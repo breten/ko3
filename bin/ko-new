@@ -7,7 +7,9 @@ const chalk = require('chalk')
 const program = require('commander')
 const Ko = require('../lib/ko')
 const initDir = require('../lib/initDir.js')
-
+const homedir = require('../lib/utils').homedir
+const objToJson = require('../lib/utils').objToJson
+const inquirer = require('inquirer')
 program
 	.usage('<prj-name>')
 	.option('-p, --page', 'create a new html file')
@@ -41,6 +43,8 @@ const page = program.page
 const processPath = process.cwd()
 const rootDir = findRoot(processPath, koConfigFileName)
 const koConfigFilePath = path.resolve(rootDir, koConfigFileName)
+const userHome = homedir()
+const userName = process.env.USER || path.basename(userHome)
 if(!rootDir){
 	console.log(chalk.red(`Could not locate ${koConfigFileName}`))
 	process.exit(1)
@@ -68,8 +72,41 @@ new Ko(options)
 			if(fs.existsSync(path.join(rootDir, ko.options.pagesDir, ko.options.prjName))){
 				console.log(chalk.red('    Warn: The project already exists.'));
 			}else{
-				initDir(_dir, path.join(rootDir, ko.options.pagesDir), '');
-				console.log(chalk.green(ko.options.prjName + ' created!'))
+				let prompt = []
+				prompt.push({
+          type: 'input',
+          name: 'prjName',
+          message: 'Title of the project:',
+          default: ko.options.prjName
+        })
+				prompt.push({
+          type: 'input',
+          name: 'desc',
+          message: 'A description of the project:',
+          default: ko.options.prjName
+        })
+				prompt.push({
+          type: 'input',
+          name: 'userName',
+          message: 'Author’s name:',
+          default: userName
+        })
+				inquirer.prompt(prompt).then( answers => {
+
+					_dir[ko.options.prjName]['config.json'] = objToJson({
+						name: answers.prjName,
+						description: answers.desc,
+						author: answers.userName,
+						pages: [
+							{
+								path: 'index.shtml'
+							}
+						]
+					})
+					initDir(_dir, path.join(rootDir, ko.options.pagesDir), '')
+					console.log(chalk.green(ko.options.prjName + ' created!'))
+        })
+				
 			}
 		}else{
 			let _dir = {}
@@ -78,8 +115,36 @@ new Ko(options)
 			if(fs.existsSync(path.join(processPath, _tarName))){
 				console.log(chalk.red('    Warn: The file already exists.'));
 			}else{
-				initDir(_dir, processPath, '')
-				console.log(chalk.green(_tarName + ' created!'))
+
+				let prompt = []
+				prompt.push({
+          type: 'input',
+          name: 'desc',
+          message: 'A description of the page:',
+          default: prjName
+        })
+				prompt.push({
+          type: 'input',
+          name: 'userName',
+          message: 'Author’s name:',
+          default: userName
+        })
+				inquirer.prompt(prompt).then( answers => {
+					let config = {}
+					const configFilePath = path.join(processPath, 'config.json')
+					if(fs.existsSync(configFilePath)){
+						config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+					}
+					!config.pages && (config.pages = [])
+					config.pages.push({
+						path: _tarName,
+						author: answers.userName,
+						description: answers.desc
+					})
+					_dir['config.json'] = objToJson(config)
+					initDir(_dir, processPath, '')
+					console.log(chalk.green(_tarName + ' created!'))
+        })
 			}
 		}
 	})
