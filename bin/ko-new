@@ -42,14 +42,13 @@ const koConfigFileName = 'ko.config.js'
 const page = program.page
 const processPath = process.cwd()
 const rootDir = findRoot(processPath, koConfigFileName)
-const koConfigFilePath = path.resolve(rootDir, koConfigFileName)
-const userHome = homedir()
-const userName = process.env.USER || path.basename(userHome)
 if(!rootDir){
 	console.log(chalk.red(`Could not locate ${koConfigFileName}`))
 	process.exit(1)
 }
-
+const koConfigFilePath = path.resolve(rootDir, koConfigFileName)
+const userHome = homedir()
+const userName = process.env.USER || path.basename(userHome)
 const options = require(koConfigFilePath)
 options.prjName = prjName
 const _newPrjConfig = {
