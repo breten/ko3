@@ -6,15 +6,16 @@ const _ = require('lodash')
 const chalk = require('chalk')
 const program = require('commander')
 const Ko = require('../lib/ko')
+const parseDir = require('../lib/doc').parseDir
+const generateDocAsJson = require('../lib/doc').generateDocAsJson
 
 program
-	.usage('<prj-name>')
-	.option('-d, --deploy', 'deploy the project after built')
+	.usage('<dir>')
 	.on('--help', function () {
 	  console.log('  Examples:')
 	  console.log()
-	  console.log(chalk.gray('    # build the project'))
-	  console.log('    $ ko3 build project-name')
+	  console.log(chalk.gray('    # Generate documents'))
+	  console.log('    $ ko3 doc dir')
 	  console.log()
 	})
 	.parse(process.argv)
@@ -22,10 +23,11 @@ program
 if(program.args.length < 1) {
 	return program.help()
 }
-const prjName = program.args[0]
+let dirName = program.args[0]
+dirName = dirName.replace(/\/$/, '')
+console.log(dirName)
 const koConfigFileName = 'ko.config.js'
 const koConfigFilePath = path.resolve('.', koConfigFileName)
-const deploy = program.deploy
 
 let options = {}
 if(fs.existsSync(koConfigFilePath)) {
@@ -35,27 +37,18 @@ if(fs.existsSync(koConfigFilePath)) {
 	return
 }
 
-options.prjName = prjName
-
 new Ko(options)
 	.then(ko => {
-		ko.clearDist()
-			.then(ko.parseHtml)
-			.then(ko.build)
-			.then(ko.outputHtml)
-			.then(ko.sitemap)
-			.then(() => {
-				return ko.clearTmp()
+		parseDir(dirName)
+			.then(data => {
+				return Promise.resolve({
+					indexFilePath: path.join(ko.options.docsDist, 'index.json'),
+					filePath: path.join(ko.options.docsDist, dirName.replace(/\//g, '.') + '.json'), 
+					data
+				})
 			})
-			.then(() => {
-				console.log(chalk.green('Building done'))
-				if(deploy) {
-					console.log(chalk.gray('Uploading...'))
-					return ko.deploy()
-				}
-				return Promise.resolve()
-			})
-			.catch((err) => {
+			.then(generateDocAsJson)
+			.catch(err => {
 				console.error(err)
 				process.exit(1)
 			})
