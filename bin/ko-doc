@@ -2,12 +2,10 @@
 
 const path = require('path')
 const fs = require('fs')
-const _ = require('lodash')
 const chalk = require('chalk')
 const program = require('commander')
 const Ko = require('../lib/ko')
-const parseDir = require('../lib/doc').parseDir
-const generateDocAsJson = require('../lib/doc').generateDocAsJson
+const generateDocs = require('../lib/doc').generateDocs
 
 program
 	.usage('<dir>')
@@ -20,12 +18,14 @@ program
 	})
 	.parse(process.argv)
 
-if(program.args.length < 1) {
-	return program.help()
-}
-let dirName = program.args[0]
+let dirName = program.args[0] || './'
 dirName = dirName.replace(/\/$/, '')
-console.log(dirName)
+
+if(!fs.existsSync(dirName)){
+	console.log(chalk.red(`No such file or directory, stat '${dirName}'`))
+	return
+}
+
 const koConfigFileName = 'ko.config.js'
 const koConfigFilePath = path.resolve('.', koConfigFileName)
 
@@ -39,15 +39,7 @@ if(fs.existsSync(koConfigFilePath)) {
 
 new Ko(options)
 	.then(ko => {
-		parseDir(dirName)
-			.then(data => {
-				return Promise.resolve({
-					indexFilePath: path.join(ko.options.docsDist, 'index.json'),
-					filePath: path.join(ko.options.docsDist, dirName.replace(/\//g, '.') + '.json'), 
-					data
-				})
-			})
-			.then(generateDocAsJson)
+		generateDocs(dirName, ko.options)
 			.catch(err => {
 				console.error(err)
 				process.exit(1)
