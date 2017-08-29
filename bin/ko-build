@@ -6,10 +6,12 @@ const _ = require('lodash')
 const chalk = require('chalk')
 const program = require('commander')
 const Ko = require('../lib/ko')
+const generateDocs = require('../lib/doc').generateDocs
 
 program
 	.usage('<prj-name>')
 	.option('-d, --deploy', 'deploy the project after built')
+	.option('-o, --documents', 'generate documents after built')
 	.on('--help', function () {
 	  console.log('  Examples:')
 	  console.log()
@@ -26,6 +28,7 @@ const prjName = program.args[0]
 const koConfigFileName = 'ko.config.js'
 const koConfigFilePath = path.resolve('.', koConfigFileName)
 const deploy = program.deploy
+const documents = program.documents
 
 let options = {}
 if(fs.existsSync(koConfigFilePath)) {
@@ -49,6 +52,13 @@ new Ko(options)
 			})
 			.then(() => {
 				console.log(chalk.green('Building done'))
+				if(documents) {
+					
+					return generateDocs(documents == true ? './' : documents, ko.options)
+				}
+				return Promise.resolve()
+			})
+			.then(() => {
 				if(deploy) {
 					console.log(chalk.gray('Uploading...'))
 					return ko.deploy()
