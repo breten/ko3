@@ -52,7 +52,7 @@ new Ko(options)
 			})
 			.then(() => {
 				console.log(chalk.green('Building done'))
-				if(ko.options.docsDist) {
+				if(documents && ko.options.docsDist) {
 					return generateDocs(documents && documents != true ? documents : './', ko.options)
 				}
 				return Promise.resolve()
@@ -60,7 +60,9 @@ new Ko(options)
 			.then(() => {
 				if(deploy) {
 					console.log(chalk.gray('Uploading...'))
-					return ko.deploy()
+					return ko.deploy({
+						doc: !!documents
+					})
 				}
 				return Promise.resolve()
 			})
