@@ -52,9 +52,8 @@ new Ko(options)
 			})
 			.then(() => {
 				console.log(chalk.green('Building done'))
-				if(documents) {
-					
-					return generateDocs(documents == true ? './' : documents, ko.options)
+				if(ko.options.docsDist) {
+					return generateDocs(documents && documents != true ? documents : './', ko.options)
 				}
 				return Promise.resolve()
 			})
