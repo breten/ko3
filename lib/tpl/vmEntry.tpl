@@ -1,10 +1,10 @@
 const Vue = require('vue')
 <% _.forEach(components, function(component) { %>
 import <%= component.name %> from '<%= component.pathAsJs %>';<% }); %>
-<%= render %>
+<%= mixin %>
 new Vue({
     el: '[vm-container="<%= vid %>"]',
-    render: render,
+    mixins: [mixin],
     components:{
 			<% _.forEach(components, function(component) { %><%= component.name %>,<% }); %> 
 		}
